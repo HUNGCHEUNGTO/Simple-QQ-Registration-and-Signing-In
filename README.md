@@ -8,7 +8,7 @@ If an existing account signed in successfully, "Login: OK" is outputted.
 If the user signs in an account that does not exist, "ERROR: Not Exist" is outputted.
 If the user enters wrong a password, "ERROR: Wrong PW" is outputted.
 
-Sample Run:
+Sample Run:\n
 5
 L 1234567890 myQQ@qq.com
 N 1234567890 myQQ@qq.com
