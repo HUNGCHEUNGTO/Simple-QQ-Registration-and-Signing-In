@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#define KEYLENGTH 17
+#define MAXTABLESIZE 100000
+
+typedef struct Node* List;
+struct Node {
+    int acc;
+    char key[KEYLENGTH];
+    List next;
+};
+
+typedef struct HashTbl *HashTable;
+struct HashTbl {
+    int TableSize;
+    List Heads;
+};
+
+HashTable CreateTable(int TableSize);
+List NewNode(int acc, char* key, List next);
+int Hash(int N, int TableSize);
+List Find(HashTable H, int acc);
+int Insert(HashTable H, int acc, char* key);
+int LogIn(HashTable H, int acc, char* key);
+
+int main()
+{
+    int N, acc;
+    char act, key[KEYLENGTH];
+    HashTable H = CreateTable(MAXTABLESIZE);
+    if (scanf("%d\n", &N) != 1) printf("wrong\n");
+    for (int i = 0 ; i < N; i ++){
+        scanf("%c %d %s\n", &act, &acc, key);
+        //printf("%c %d %s\n", act, acc, key);
+        if (act == 'N'){
+            Insert(H, acc, key);
+        } else if (act == 'L'){
+            LogIn(H, acc, key);
+        }
+    }
+    /*
+    for (int i = 0; i <N ; i ++){
+            LogIn(H, acc, key);
+        } else {
+            Insert(H, acc, key);
+        }
+    }
+    */
+    
+    return 0;
+}
+
+int LogIn(HashTable H, int acc, char* key){
+    List P = Find(H, acc);
+    if (!P){
+        printf("ERROR: Not Exist\n");
+        return 0;
+    } else if (strcmp(P->key, key)){
+        printf("ERROR: Wrong PW\n");
+        return 0;
+    } else {
+        printf("Login: OK\n");
+        return 1;
+    }
+}
+
+int Insert(HashTable H, int acc, char* key){
+    List P =Find(H, acc);
+    if (P) {
+        printf("ERROR: Exist\n");
+        return 0;
+    }
+    int pos = Hash(acc, H->TableSize);
+    H->Heads[pos].next = NewNode(acc, key, H->Heads[pos].next);
+    printf("New: OK\n");
+    //printf("Inserted %d %s\n",acc, key);
+    return 1;
+    
+}
+
+List Find(HashTable H, int acc){
+    int pos;
+    List P;
+    pos = Hash(acc, H->TableSize);
+    //printf("pos = %d\n", pos);
+    P = H->Heads[pos].next;
+    while (P && P->acc != acc) P = P->next;
+    return P;
+}
+
+int Hash(int N, int TableSize){
+    return N%TableSize;
+}
+
+HashTable CreateTable(int TableSize){
+    HashTable H = (HashTable)malloc(sizeof(struct HashTbl));
+    H->TableSize = TableSize;
+    H->Heads = (List)malloc(sizeof(struct Node) * TableSize);
+    for (int i = 0; i < TableSize; i ++){
+        H->Heads[i].acc = 0;
+        H->Heads[i].key[0] = 0;
+        H->Heads[i].next = NULL;
+    }
+    return H;
+}
+
+List NewNode(int acc, char* key, List next){
+    List res = (List)malloc(sizeof(struct Node));
+    res->acc = acc;
+    strcpy(res->key, key);
+    res->next = next;
+    return res;
+}
